@@ -3,23 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новости FAMD</title>
-    <link rel="stylesheet" href="style5.css">
-<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=zP41VR28-oLrPJ5UYtn9qzCYgLoanJaUu41UeQAoMMQj7-jb2Vr6EX8a1IlKAJ2RE61eIlgpmNragWkSeDzm_w" charset="UTF-8"></script></head>
+    <title>Словарь FAMD</title>
+    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=QzZukqMzuqV9cYO2Pkkg0ANJEY8np_a9pRzcNscJjipxaT7TZD1YyoQInSUtaVwiLI5Zj-K_HLn7N7BScqJfeJCiyZWYkMNE9_7Q8HrhODM6k_ayKy9SgkSKwo3F8MAq" charset="UTF-8"></script><style>
+        /* Основные цвета */
+        :root {
+            --bg-color: #121212;
+            --text-color: #d4af37;
+            --container-bg: #1e1e1e;
+            --input-bg: #333;
+            --input-text: #fff;
+            --button-bg: #d4af37;
+            --button-hover: #b08c2f;
+            --result-bg: #222;
+            --shadow: 0px 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Общий стиль */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            text-align: center;
+            padding: 20px;
+            transition: 0.3s;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: var(--container-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: var(--shadow);
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: var(--input-text);
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-btn {
+            background: var(--button-bg);
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .search-btn:hover {
+            background: var(--button-hover);
+        }
+
+        .search-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--result-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            text-align: left;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
 <body>
-    <header>
-        <h2>Новости Dcm Bil</h2>
-    </header>
-    
-    <main>
-        <section id="news-container">
-            <h2>Последние новости</h2>
-            <div id="news-list">Загрузка...</div>
-        </section>
-    </main>
-<footer>
-    <p>&copy; Dcm Bil. Все права защищены.</p>
-</footer>
-    <script src="script5.js"></script>
+    <div class="container">
+        <h1>Словарь FAMD</h1>
+        <div class="search-box">
+            <input type="text" id="search" placeholder="Введите слово...">
+            <button class="search-btn" onclick="searchWord()">
+                <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="🔍">
+            </button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function searchWord() {
+            let query = document.getElementById("search").value.trim();
+            if (query === "") {
+                document.getElementById("result").innerHTML = "<p>Введите слово для поиска.</p>";
+                return;
+            }
+
+        let url = `https://ru.wikipedia.org/api/rest_v1/page/summary/${query}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.type === "https://mediawiki.org/wiki/HyperSwitch/errors/not_found") {
+                        document.getElementById("result").innerHTML = "<p>Слово не найдено.</p>";
+                    } else {
+                        let image = data.originalimage ? <img src="${data.originalimage.source}" alt="${data.title}"> : "";
+                        document.getElementById("result").innerHTML = `
+                            <h2>${data.title}</h2>
+                            ${image}
+                            <p>${data.extract}</p>
+                        `;
+                    }
+                })
+                .catch(() => {
+                    document.getElementById("result").innerHTML = "<p>Ошибка загрузки данных.</p>";
+                });
+        }
+    </script>
 </body>
 </html>
